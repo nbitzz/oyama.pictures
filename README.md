@@ -1,3 +1,3 @@
 # oyama.pictures
 
-\* oyama pictures
+\*.oyama.pictures
