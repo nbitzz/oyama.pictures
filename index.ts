@@ -1,6 +1,7 @@
 import { readdir } from "fs/promises"
 import { exec } from "child_process"
 import { randomInt } from "node:crypto"
+import { homedir } from "os"
 
 // helper functions
 
@@ -37,7 +38,7 @@ function resolveFile(member: OyamaFamilyMember, file: string) {
 // Requires viu, don't forget to install
 function getTerminalRender(member: OyamaFamilyMember, file: string) {
 	return new Promise((resolve, reject) =>
-		exec(`~/.cargo/bin/viu "${resolveFile(member, file)}" --width 40 -t`, (err, stdout, stderr) => {
+		exec(`${homedir}/.cargo/bin/viu "${resolveFile(member, file)}" --width 40 -t`, (err, stdout, stderr) => {
 			resolve(stdout)
 		})
 	)
