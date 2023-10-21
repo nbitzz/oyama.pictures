@@ -37,7 +37,7 @@ function resolveFile(member: OyamaFamilyMember, file: string) {
 // Requires viu, don't forget to install
 function getTerminalRender(member: OyamaFamilyMember, file: string) {
 	return new Promise((resolve, reject) =>
-		exec(`viu "${resolveFile(member, file)}" --width 40 -t`, (err, stdout, stderr) => {
+		exec(`~/.cargo/bin/viu "${resolveFile(member, file)}" --width 40 -t`, (err, stdout, stderr) => {
 			resolve(stdout)
 		})
 	)
