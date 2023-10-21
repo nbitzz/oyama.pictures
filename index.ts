@@ -46,7 +46,7 @@ function getTerminalRender(member: OyamaFamilyMember, file: string) {
 // Bun server
 
 Bun.serve({
-	port: 3000,
+	port: 1027,
 	async fetch(req) {
 		let target = req.headers.get("Host").split(".")[0]
 		if (!isFamilyMember(target)) target = oyamaFamily
