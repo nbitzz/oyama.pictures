@@ -35,7 +35,7 @@ const
 	// Requires viu, don't forget to install
 	getTerminalRender = (member: OyamaFamilyMember, file: string) => {
 		return new Promise<string>((resolve, reject) =>
-			exec(`~/.cargo/bin/viu "${resolveFile(member, file)}" --height 30 -t`, (err, stdout, stderr) => {
+			exec(`~/.cargo/bin/viu "${resolveFile(member, file)}" --height 30 -t`, {env: { "COLORTERM": "truecolor" }}, (err, stdout, stderr) => {
 				resolve(stdout.toString())
 				console.error(stderr)
 			})
