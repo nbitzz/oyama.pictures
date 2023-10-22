@@ -1,7 +1,6 @@
 import { readdir } from "fs/promises"
 import { exec } from "child_process"
 import { randomInt } from "node:crypto"
-import { homedir } from "os"
 
 // helper functions
 
@@ -9,23 +8,23 @@ const shortCutEnd = (str: string, sep:string=".") => str.split(sep).slice(0, -1)
 
 // define the Oyama Family
 const oyamaFamily = [ "mihari", "mahiro", "oyama" /* group photos */ ] as const
-type OyamaFamilyMember = (typeof oyama_family)[number]
+type OyamaFamilyMember = (typeof oyamaFamily)[number]
 
 // get pictures
 
-let oyamaFamilyPhotos: { [key: OyamaFamilyMember]: string[] } = await (async () => {
+let oyamaFamilyPhotos: { [x in OyamaFamilyMember]: string[] } = await (async () => {
 	let objMap = {}
 
 	for (let familyMember of oyamaFamily) {
 		objMap[familyMember] = (await readdir(`${__dirname}/oyama_pictures/${familyMember}`)).map(s => shortCutEnd(s) )
 	}
 
-	return objMap
+	return objMap as { [x in OyamaFamilyMember]: string[] }
 })()
 
 // some more helper functions here
 
-const isFamilyMember = (a:string): a is OyamaFamilyMember => oyamaFamily.includes(a)
+const isFamilyMember = (a:string): a is OyamaFamilyMember => oyamaFamily.some(e => e==a) // have to do this because .includes hates me
 const isFamilyPhoto = (member: OyamaFamilyMember, target: string) => oyamaFamilyPhotos[member].includes(target)
 
 function resolveFile(member: OyamaFamilyMember, file: string) {
@@ -38,7 +37,7 @@ function resolveFile(member: OyamaFamilyMember, file: string) {
 // Requires viu, don't forget to install
 function getTerminalRender(member: OyamaFamilyMember, file: string) {
 	return new Promise((resolve, reject) =>
-		exec(`${homedir()}/.cargo/bin/viu "${resolveFile(member, file)}" --height 30 -t`, (err, stdout, stderr) => {
+		exec(`~/.cargo/bin/viu "${resolveFile(member, file)}" --height 30 -t`, (err, stdout, stderr) => {
 			resolve(stdout)
 			console.error(stderr)
 		})
@@ -58,10 +57,14 @@ Bun.serve({
 		if (!isFamilyPhoto(target, photo)) photo = oyamaFamilyPhotos[target]
 								[randomInt(0, oyamaFamilyPhotos[target].length)]
 
-		return new Response(
+		let res = new Response(
 			req.headers.get("User-Agent").includes("curl")
 			? await getTerminalRender(target, photo)
 			: Bun.file(resolveFile(target, photo))
-		);
+		)
+
+		res.headers.set("Content-Disposition", `attachment; filename=${photo}`);
+
+		return res
 	}
-})
+)
