@@ -3,6 +3,7 @@ import { exec } from "child_process"
 import { randomInt } from "node:crypto"
 import type { Serve } from "bun"
 import { basename } from "node:path"
+import { homedir } from "node:os"
 
 // define the Oyama Family
 const oyamaFamily = [ "mihari", "mahiro", "oyama" /* group photos */ ] as const
@@ -35,7 +36,7 @@ const
 	// Requires viu, don't forget to install
 	getTerminalRender = (member: OyamaFamilyMember, file: string) => {
 		return new Promise<string>((resolve, reject) =>
-			exec(`~/.cargo/bin/viu "${resolveFile(member, file)}" --height 30 -t`, {env: { "COLORTERM": "truecolor" }}, (err, stdout, stderr) => {
+			exec(`${homedir()}/.cargo/bin/viu "${resolveFile(member, file)}" --height 30 -t`, {env: { "COLORTERM": "truecolor" }}, (err, stdout, stderr) => {
 				resolve(stdout.toString())
 				console.error(stderr)
 			})
