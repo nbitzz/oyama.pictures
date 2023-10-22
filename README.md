@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">  
-  <img src="https://github.com/nbitzz/oyama.pictures/assets/77242831/02461126-82a9-4ef3-a292-2cf8fa558250" alt="Image of Mahiro Oyama from Onii-chan wa Oshimai! / ONIMAI: I'm Now Your Sister! in a terminal">
+  <img src="https://github.com/nbitzz/oyama.pictures/assets/77242831/ee530e88-82d9-44d5-ad53-587115f34a19" alt="Image of Mahiro Oyama from Onii-chan wa Oshimai! / ONIMAI: I'm Now Your Sister! in a terminal">
 </p>
 
 ## structure
