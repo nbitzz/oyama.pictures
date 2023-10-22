@@ -8,7 +8,7 @@ import { homedir } from "os"
 const shortCutEnd = (str: string, sep:string=".") => str.split(sep).slice(0, -1).join(sep)
 
 // define the Oyama Family
-const oyamaFamily = [ "mihari", "mahiro" ] as const
+const oyamaFamily = [ "mihari", "mahiro", "oyama" /* group photos */ ] as const
 type OyamaFamilyMember = (typeof oyama_family)[number]
 
 // get pictures
