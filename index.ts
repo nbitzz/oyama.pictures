@@ -60,7 +60,7 @@ Bun.serve({
 			: Bun.file(resolveFile(target, photo))
 		)
 
-		res.headers.set("Content-Disposition", `attachment; filename=${photo}`);
+		res.headers.set("Content-Disposition", `inline; filename=${photo}`);
 
 		return res
 	}
