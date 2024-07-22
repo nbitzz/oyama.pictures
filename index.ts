@@ -2,21 +2,28 @@ import { readdir } from "fs/promises"
 import { exec } from "child_process"
 import { randomInt } from "node:crypto"
 import type { Serve } from "bun"
-import { basename } from "node:path"
 import { homedir } from "node:os"
 
-// define the Oyama Family
-const oyamaFamily = [ "mihari", "mahiro", "oyama" /* group photos */ ] as const
-type OyamaFamilyMember = (typeof oyamaFamily)[number]
+import hostMap, { ONIMAICharacterOrFamily, characterOrFamilyArray } from "./pictures/mapping"
 
 // get pictures
 
-const oyamaFamilyPhotos: Record<OyamaFamilyMember, string[]> = Object.fromEntries(
+const photos: Record<ONIMAICharacterOrFamily, Record<string, { path: string, filename: string }>> = Object.fromEntries(
 	await Promise.all(
-		oyamaFamily.map(async (member) => [
+		characterOrFamilyArray.map(async (member) => [
 			member,
-			await readdir(`${import.meta.dir}/oyama_pictures/${member}`).then(
-				(files) => files.map((file) => basename(file, ".png"))
+			await readdir(`${import.meta.dir}/pictures/${member}`).then(
+				(files) => 
+					Object.fromEntries(files
+						.map(
+							(file) => [
+								file.match(/(.*)\..*/)?.[1].toLowerCase(),
+								{
+									filename: file,
+									path: `${import.meta.dir}/pictures/${member}/${file}`
+								}
+							]
+						))
 			),
 		])
 	)
@@ -25,18 +32,18 @@ const oyamaFamilyPhotos: Record<OyamaFamilyMember, string[]> = Object.fromEntrie
 // some more helper functions here
 
 const 
-	isFamilyMember = (a:string): a is OyamaFamilyMember => oyamaFamily.some(e => e==a), // have to do this because .includes hates me
-	isFamilyPhoto = (member: OyamaFamilyMember, target: string) => oyamaFamilyPhotos[member].includes(target),
-	resolveFile = (member: OyamaFamilyMember, file: string) =>  {
-		if (!isFamilyPhoto(member, file))
-			throw new Error(`Not a photo of ${member}: ${file}`)
+	isPhoto = (character: ONIMAICharacterOrFamily, target: string) => 
+		target.toLowerCase() in photos[character],
+	resolveFile = (character: ONIMAICharacterOrFamily, file: string) =>  {
+		if (!isPhoto(character, file))
+			throw new Error(`Not a photo of ${character}: ${file}`)
 
-		return `${import.meta.dir}/oyama_pictures/${member}/${file}.png`
+		return photos[character as ONIMAICharacterOrFamily][file.toLowerCase()]
 	},
 	// Requires viu, don't forget to install
-	getTerminalRender = (member: OyamaFamilyMember, file: string) => {
+	getTerminalRender = (filePath: string) => {
 		return new Promise<string>((resolve, reject) =>
-			exec(`${homedir()}/.cargo/bin/viu "${resolveFile(member, file)}" --height 30 -t`, {env: { "COLORTERM": "truecolor" }}, (err, stdout, stderr) => {
+			exec(`${homedir()}/.cargo/bin/viu "${filePath}" --height 30 -t`, {env: { "COLORTERM": "truecolor" }}, (err, stdout, stderr) => {
 				resolve(stdout.toString())
 				console.error(stderr)
 			})
@@ -48,20 +55,30 @@ const
 Bun.serve({
 	port: 1027,
 	async fetch(req) {
-		let target = req.headers.get("Host")?.split(".")[0] ?? ""
-		if (!isFamilyMember(target)) return
+		// Convert Host header to the respective character folder
+		let character = hostMap[req.headers.get("Host") as keyof typeof hostMap]
+		if (!character)
+			return
 	
+		// Pick a photo to send
 		let photo = new URL(req.url).pathname.replace(/^\//g,"")
-		if (!isFamilyPhoto(target, photo)) photo = oyamaFamilyPhotos[target]
-								[randomInt(0, oyamaFamilyPhotos[target].length)]
- 
+		let characterPhotoNames = Object.keys(photos[character])
+
+		if (!isPhoto(character, photo))
+			photo =
+				characterPhotoNames[randomInt(0, characterPhotoNames.length)]
+	
+		// Get file for photo
+		let file = resolveFile(character, photo)
+
+		// Send to peer
 		let res = new Response(
 			req.headers.get("User-Agent")?.includes("curl")
-			? await getTerminalRender(target, photo)
-			: Bun.file(resolveFile(target, photo))
+			? await getTerminalRender(file.path)
+			: Bun.file(file.path)
 		)
 
-		res.headers.set("Content-Disposition", `inline; filename=${photo}`);
+		res.headers.set("Content-Disposition", `inline; filename=${file.filename}`);
 
 		return res
 	}
