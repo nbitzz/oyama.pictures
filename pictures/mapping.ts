@@ -11,10 +11,12 @@ const hostMap = {
 
     "momiji.hozuki.pictures": "momiji",
     "kaede.hozuki.pictures": "kaede",
-    "hozuki.pictures": "hozuki"
+    "hozuki.pictures": "hozuki",
 
     // up next:
-    // Miyo, Asahi, maybe Nayuta
+    // Miyo, maybe Nayuta
+
+    "asahi.pet": "asahi"
     
 } as const satisfies Record<string, string>
 

@@ -3,9 +3,11 @@
 <p align="center">
 <code>curl mahiro.oyama.pictures</code> | <code>curl mihari.oyama.pictures</code><br />
 <code>curl momiji.hozuki.pictures</code> | <code>curl kaede.hozuki.pictures</code><br />
+<code>curl asahi.pet</code><br />
 <em>or</em><br />
 <a href="https://mahiro.oyama.pictures"><code>mahiro.oyama.pictures</code></a> | <a href="https://mihari.oyama.pictures"><code>mihari.oyama.pictures</code></a><br />
-<a href="https://momiji.hozuki.pictures"><code>momiji.hozuki.pictures</code></a> | <a href="https://kaede.hozuki.pictures"><code>kaede.hozuki.pictures</code></a>
+<a href="https://momiji.hozuki.pictures"><code>momiji.hozuki.pictures</code></a> | <a href="https://kaede.hozuki.pictures"><code>kaede.hozuki.pictures</code></a><br />
+<a href="https://asahi.pet"><code>asahi.pet</code></a>
 </p>
 
 <p align="center">  
